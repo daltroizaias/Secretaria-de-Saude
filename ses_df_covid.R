@@ -16,7 +16,7 @@ dados_brutos <- read.csv("https://covid19.ssp.df.gov.br/resources/dados/dados-ab
                          sep = ';',
                          stringsAsFactors = F,
                          na.strings = c('', "")) %>% 
-  clean_names()
+                clean_names()
 
 
 # Pre-processing  ---------------------------------------------------------
@@ -106,6 +106,16 @@ dados %>% select(-x_u_feff_data) %>%
             doencas)
 
 
+dados %>%
 
-dados %>% glimpse()
-dados %>% colnames()
+  group_by(faixa_etaria, obito) %>% 
+  summarise(casos = n()) %>% 
+  pivot_wider(names_from = 'obito', values_from = 'casos') %>% 
+  summarise(faixa_etaria,
+            Não = Não,
+            Sim = Sim,
+            total = Não + Sim)
+
+
+dados %>% 
+  tabyl(faixa_etaria, obito)

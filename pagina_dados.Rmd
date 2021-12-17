@@ -1,0 +1,58 @@
+---
+title: "Dados Covid SES DF atualizado"
+author: "Daltro Izaias"
+date: "16/12/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+```{r BASE DE DADOS, echo=FALSE, warning=FALSE}
+
+# Packages ----------------------------------------------------------------
+
+
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(gt)
+library(gtExtras)
+
+
+# Data read online SES- DF  -----------------------------------------------
+
+dados <- read.csv("dados_ses.csv",
+                         stringsAsFactors = F,
+                         na.strings = c('', ""),
+                  encoding = 'UTF-8') %>% 
+  clean_names()
+
+```
+
+Processamento dos dados
+
+```{r prevalencia_mortalidade, echo=FALSE, warning=FALSE}
+# Prevalence of mortality COVID-2019
+dados %>% 
+  tabyl(obito, sexo) %>% 
+  adorn_percentages(denominator = 'col') %>% 
+  adorn_pct_formatting() %>% 
+  gt() %>% 
+  tab_header(title = 'Percentual de Mortes por Covid-19', 
+             subtitle = 'Proporção de mortes por sexo') %>%
+  cols_label(obito = md('**Óbitos**')) %>% 
+  cols_label(Feminino = md('**Feminino**')) %>%
+  cols_label(Masculino = md('**Masculino**')) %>% 
+  tab_options(table.align = 'center')
+```
+Verifica-se que a encontra-se baixo de 3%
+```{r}
+dados %>%
+  filter(obito == 'Sim') %>%
+  group_by(sexo, faixa_etaria) %>% 
+  summarise(faixa_etaria = sum(faixa_etaria))
+```
